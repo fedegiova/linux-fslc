@@ -68,7 +68,7 @@
 			regulator-min-microvolt = <1800000>;
 			regulator-max-microvolt = <1800000>;
 			regulator-always-on;
-		};	
+		};
 
 		reg_3p3v: 3p3v {
 			compatible = "regulator-fixed";
@@ -578,7 +578,7 @@
 				MX6QDL_PAD_SD3_DAT5__SD3_DATA5 0x17059
 				MX6QDL_PAD_SD3_DAT6__SD3_DATA6 0x17059
 				MX6QDL_PAD_SD3_DAT7__SD3_DATA7 0x17059
-				MX6QDL_PAD_SD3_RST__SD3_RESET  0x17059 /*?MOD?*/	  
+				MX6QDL_PAD_SD3_RST__SD3_RESET  0x17059 /*?MOD?*/
 			>;
 		};
 
@@ -627,6 +627,38 @@
 			>;
 		};
 
+		pinctrl_flexcan1_1: flexcan1grp-1 {
+			fsl,pins = <
+				MX6QDL_PAD_KEY_ROW2__FLEXCAN1_RX 0x80000000
+				MX6QDL_PAD_KEY_COL2__FLEXCAN1_TX 0x80000000
+			>;
+		};
+
+		pinctrl_flexcan2_1: flexcan2grp-1 {
+			fsl,pins = <
+				MX6QDL_PAD_KEY_COL4__FLEXCAN2_TX 0x80000000
+				MX6QDL_PAD_KEY_ROW4__FLEXCAN2_RX 0x80000000
+			>;
+		};
+
+		pinctrl_weim_cs0_1: weim_cs0grp-1 {
+			fsl,pins = <
+				MX6QDL_PAD_EIM_CS0__EIM_CS0_B   0xb0b1
+				MX6QDL_PAD_EIM_CS1__EIM_CS1_B   0xb0b1 /*?MOD? Added*/
+				MX6QDL_PAD_EIM_OE__EIM_OE_B     0xb0b1
+				MX6QDL_PAD_EIM_RW__EIM_RW       0xb0b1
+				MX6QDL_PAD_EIM_LBA__EIM_LBA_B	0xb0b1
+				MX6QDL_PAD_EIM_DA7__EIM_AD07   0xb0b1
+				MX6QDL_PAD_EIM_DA6__EIM_AD06   0xb0b1
+				MX6QDL_PAD_EIM_DA5__EIM_AD05   0xb0b1
+				MX6QDL_PAD_EIM_DA4__EIM_AD04   0xb0b1
+				MX6QDL_PAD_EIM_DA3__EIM_AD03   0xb0b1
+				MX6QDL_PAD_EIM_DA2__EIM_AD02   0xb0b1
+				MX6QDL_PAD_EIM_DA1__EIM_AD01   0xb0b1
+				MX6QDL_PAD_EIM_DA0__EIM_AD00   0xb0b1
+			>;
+		};
+
 	};
 };
 
@@ -670,14 +702,26 @@
 	status = "disabled";
 };
 
+&can1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan1_1>;
+	status = "okay";
+};
+
+&can2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan2_1>;
+	status = "okay";
+};
+
 &ldb {
 	status = "okay";
 	lvds-channel@0 {
-        crtc = "ipu2-di0";  
-        fsl,data-mapping = "spwg";  
-        fsl,data-width = <18>;  
-        primary;  
-        status = "okay";  
+        crtc = "ipu2-di0";
+        fsl,data-mapping = "spwg";
+        fsl,data-width = <18>;
+        primary;
+        status = "okay";
 		display-timings {
 			native-mode = <&timing0>;
 			timing0: ldb-svga {
@@ -795,7 +839,40 @@
 };
 
 
-//TODO VERIFY
+&weim {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_weim_cs0_1>;
+	#address-cells = <2>;
+	#size-cells = <1>;
+	ranges = <0 0 0x08000000 0x04000000
+		  1 0 0x0c000000 0x04000000>;
+	status = "okay";
+
+	sja1000_a@0,0 {
+		compatible = "nxp,sja1000";
+		reg = <0 0 0x01ff>;
+        reg-io-width = <4>;
+		fsl,weim-cs-timing = <0x002300b9 0x00001001 0x1C284646
+		0x00000000 0xDC4009A6 0x00000000>;/*Setup device for multiplexed bus*/
+		nxp,external-clock-frequency = <16000000>;
+		nxp,clock-out-frequency = <2000000>;
+		interrupts = <20 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&gpio3>;
+	};
+
+	sja1000_b@1,0 {
+		compatible = "nxp,sja1000";
+		reg = <1 0 0x01ff>;
+        reg-io-width = <4>;
+		fsl,weim-cs-timing = <0x002300b9 0x00001001 0x1C284646
+		0x00000000 0xDC4009A6 0x00000000>;/*Setup device for multiplexed bus*/
+		nxp,external-clock-frequency = <16000000>;
+		nxp,clock-out-frequency = <2000000>;
+		interrupts = <23 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&gpio3>;
+	};
+};
+
 &gpc {
 	/* use ldo-enable, u-boot will check it and configure */
 	fsl,ldo-bypass = <0>;

@@ -326,6 +326,7 @@ static inline void imx6q_enet_init(void)
 static void __init imx6q_init_machine(void)
 {
 	struct device *parent;
+    struct regmap *gpr;
 
 	if (cpu_is_imx6q() && imx_get_soc_revision() >= IMX_CHIP_REVISION_2_0)
 		imx_print_silicon_rev("i.MX6QP", IMX_CHIP_REVISION_1_0);
@@ -343,6 +344,10 @@ static void __init imx6q_init_machine(void)
 	imx_anatop_init();
 	imx6q_csi_mux_init();
 	cpu_is_imx6q() ?  imx6q_pm_init() : imx6dl_pm_init();
+
+	gpr = syscon_regmap_lookup_by_compatible("fsl,imx6q-iomuxc-gpr");
+	regmap_update_bits(gpr, IOMUXC_GPR1,0xfff,0x1b);
+
 	imx6q_axi_init();
 }
 
