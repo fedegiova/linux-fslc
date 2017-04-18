@@ -219,9 +219,16 @@ static void __init imx6q_1588_init(void)
 	 */
 	gpr = syscon_regmap_lookup_by_compatible("fsl,imx6q-iomuxc-gpr");
 	if (!IS_ERR(gpr))
+/*?MOD? Set GPIO_15 input for RMII reference clock*/
+		regmap_update_bits(gpr, IOMUXC_GPR1,
+				IMX6Q_GPR1_ENET_CLK_SEL_MASK,
+				IMX6Q_GPR1_ENET_CLK_SEL_PAD);
+
+/*
 		regmap_update_bits(gpr, IOMUXC_GPR1,
 				IMX6Q_GPR1_ENET_CLK_SEL_MASK,
 				IMX6Q_GPR1_ENET_CLK_SEL_ANATOP);
+*/
 	else
 		pr_err("failed to find fsl,imx6q-iomuxc-gpr regmap\n");
 
@@ -309,7 +316,8 @@ static void __init imx6q_enet_clk_sel(void)
 static inline void imx6q_enet_init(void)
 {
 	imx6_enet_mac_init("fsl,imx6q-fec", "fsl,imx6q-ocotp");
-	imx6q_enet_phy_init();
+    //the phy has been already configured by uboot
+	//imx6q_enet_phy_init();
 	imx6q_1588_init();
 	if (cpu_is_imx6q() && imx_get_soc_revision() >= IMX_CHIP_REVISION_2_0)
 		imx6q_enet_clk_sel();
