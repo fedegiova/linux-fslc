@@ -225,6 +225,7 @@ config SND_SOC_ALL_CODECS
 	select SND_SOC_RPMSG_WM8960
 	select SND_SOC_RPMSG_CS42XX8
 	select SND_SOC_RPMSG_AK4497
+	select SND_SOC_LM49352 if I2C
         help
           Normally ASoC codec drivers are only built if a machine driver which
           uses them is also built since they are only usable with a machine
@@ -1221,4 +1222,6 @@ config SND_SOC_TPA6130A2
 	tristate "Texas Instruments TPA6130A2 headphone amplifier"
 	depends on I2C
 
+config SND_SOC_LM49352
+	tristate
 endmenu

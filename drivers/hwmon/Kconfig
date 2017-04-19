@@ -1762,6 +1762,11 @@ config SENSORS_W83793
 	  This driver can also be built as a module.  If so, the module
 	  will be called w83793.
 
+config LM49352_CNTR
+	tristate "LM49352_CNTR device driver"
+	depends on I2C
+	default y
+
 config SENSORS_W83795
 	tristate "Winbond/Nuvoton W83795G/ADG"
 	depends on I2C

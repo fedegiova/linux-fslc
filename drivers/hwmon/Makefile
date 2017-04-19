@@ -174,6 +174,7 @@ obj-$(CONFIG_SENSORS_WM8350)	+= wm8350-hwmon.o
 obj-$(CONFIG_SENSORS_XGENE)	+= xgene-hwmon.o
 obj-$(CONFIG_SENSORS_MAG3110)   += mag3110.o
 obj-$(CONFIG_MXC_MMA8451)       += mxc_mma8451.o
+obj-$(CONFIG_LM49352_CNTR)		+= lm49352_cntr.o
 
 obj-$(CONFIG_PMBUS)		+= pmbus/
 
