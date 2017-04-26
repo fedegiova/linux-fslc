@@ -2416,4 +2416,6 @@ struct v4l2_create_buffers {
 
 #define BASE_VIDIOC_PRIVATE	192		/* 192-255 are private */
 
+#define VIDIOC_TVP5150_INPUT  _IOWR('V', BASE_VIDIOC_PRIVATE + 0, int)
+
 #endif /* _UAPI__LINUX_VIDEODEV2_H */

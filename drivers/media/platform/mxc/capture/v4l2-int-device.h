@@ -230,6 +230,7 @@ enum v4l2_int_ioctl_num {
 	 *
 	 */
 	vidioc_int_priv_start_num = 2000,
+    vidioc_int_tvp5150_input_num,
 };
 
 /*
@@ -297,6 +298,7 @@ V4L2_INT_WRAPPER_0(dev_init);
 V4L2_INT_WRAPPER_0(dev_exit);
 V4L2_INT_WRAPPER_1(s_power, enum v4l2_power, /*dummy arg*/);
 V4L2_INT_WRAPPER_1(g_priv, void, *);
+V4L2_INT_WRAPPER_1(tvp5150_input, void, *);
 V4L2_INT_WRAPPER_1(g_ifparm, struct v4l2_ifparm, *);
 V4L2_INT_WRAPPER_1(g_needs_reset, void, *);
 V4L2_INT_WRAPPER_1(enum_framesizes, struct v4l2_frmsizeenum, *);

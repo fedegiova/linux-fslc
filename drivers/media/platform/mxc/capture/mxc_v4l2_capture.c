@@ -1347,6 +1347,8 @@ static int mxc_v4l2_s_param(cam_data *cam, struct v4l2_streamparm *parm)
 	pr_debug("   clock_curr=mclk=%d\n", ifparm.u.bt656.clock_curr);
 	if (ifparm.u.bt656.clock_curr == 0)
 		csi_param.clk_mode = IPU_CSI_CLK_MODE_CCIR656_INTERLACED;
+	else if (ifparm.u.bt656.clock_curr == 1)
+		csi_param.clk_mode = IPU_CSI_CLK_MODE_CCIR656_PROGRESSIVE;
 	else
 		csi_param.clk_mode = IPU_CSI_CLK_MODE_GATED_CLK;
 
@@ -2399,6 +2401,19 @@ static long mxc_v4l_do_ioctl(struct file *file,
 			pr_err("ERROR: v4l2 capture: slave not found!\n");
 			retval = -ENODEV;
 		}
+		break;
+	}
+	case VIDIOC_TVP5150_INPUT:
+	{
+		int *index = arg;
+
+		if (cam->sensor)
+			retval = vidioc_int_tvp5150_input(cam->sensor, index);
+		else {
+			pr_err("ERROR: v4l2 capture: slave not found!\n");
+			retval = -ENODEV;
+	    }
+
 		break;
 	}
 	case VIDIOC_TRY_FMT:
