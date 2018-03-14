@@ -1028,6 +1028,12 @@ config HID_ALPS
 	Say Y here if you have a Alps touchpads over i2c-hid or usbhid
 	and want support for its special functionalities.
 
+config HID_SIS_CTRL
+    tristate "SiS Touch Device Controller"
+    depends on HID_MULTITOUCH
+    ---help---
+      Support for SiS Touch devices update FW.
+
 endmenu
 
 endif # HID

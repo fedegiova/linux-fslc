@@ -52,6 +52,7 @@ MODULE_AUTHOR("Benjamin Tissoires <benjamin.tissoires@gmail.com>");
 MODULE_DESCRIPTION("HID multitouch panels");
 MODULE_LICENSE("GPL");
 
+#include "hid-sis_ctrl.h"
 #include "hid-ids.h"
 
 /* quirks to control the device */
@@ -161,6 +162,8 @@ static void mt_post_parse(struct mt_device *td);
 
 /* vendor specific classes */
 #define MT_CLS_3M				0x0101
+#define MT_CLS_SIS				0x0110
+
 /* reserved					0x0102 */
 #define MT_CLS_EGALAX				0x0103
 #define MT_CLS_EGALAX_SERIAL			0x0104
@@ -307,6 +310,10 @@ static struct mt_class mt_classes[] = {
 			MT_QUIRK_SLOT_IS_CONTACTID |
 			MT_QUIRK_HOVERING
 	},
+    { .name = MT_CLS_SIS,
+        .quirks = MT_QUIRK_NOT_SEEN_MEANS_UP |
+            MT_QUIRK_CONTACT_CNT_ACCURATE
+    },
 	{ }
 };
 
@@ -664,8 +671,14 @@ static void mt_complete_slot(struct mt_device *td, struct input_dev *input)
 		struct mt_slot *s = &td->curdata;
 		struct input_mt *mt = input->mt;
 
-		if (slotnum < 0 || slotnum >= td->maxcontacts)
-			return;
+		//if (slotnum < 0 || slotnum >= td->maxcontacts)
+		//	return;
+
+        if (slotnum < 0 || slotnum >= td->maxcontacts || s->x > 0xfff || s->y > 0xfff) {
+            printk(KERN_INFO "MT_event before sending : Error data blocked\n");
+            td->num_received++;
+            return;
+        }
 
 		if ((td->mtclass.quirks & MT_QUIRK_IGNORE_DUPLICATES) && mt) {
 			struct input_mt_slot *slot = &mt->slots[slotnum];
@@ -1353,6 +1366,20 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	if (ret != 0)
 		return ret;
 
+    //SiS set noget for not init reports
+    if (hdev->vendor == USB_VENDOR_ID_SIS_TOUCH)
+    {
+        hdev->quirks |= HID_QUIRK_NOGET;
+        printk(KERN_INFO "sis:sis-probe: quirk = %x\n", hdev->quirks);
+        //SiS FW update
+#ifdef CONFIG_HID_SIS_CTRL
+        ret = sis_setup_chardev(hdev);
+        if(ret)
+        {
+            printk( KERN_INFO "sis_setup_chardev fail\n");
+        }
+#endif //CONFIG_HID_SIS_CTRL
+    }
 	if (mtclass->quirks & MT_QUIRK_FIX_CONST_CONTACT_ID)
 		mt_fix_const_fields(hdev, HID_DG_CONTACTID);
 
@@ -1401,6 +1428,14 @@ static void mt_remove(struct hid_device *hdev)
 	struct mt_device *td = hid_get_drvdata(hdev);
 
 	del_timer_sync(&td->release_timer);
+    //SiS FW update
+#ifdef CONFIG_HID_SIS_CTRL
+    if (hdev->vendor == USB_VENDOR_ID_SIS_TOUCH)
+    {
+        sis_deinit_chardev(hdev);
+    }
+#endif //CONFIG_HID_SIS_CTRL
+
 
 	sysfs_remove_group(&hdev->dev.kobj, &mt_attribute_group);
 	hid_hw_stop(hdev);
@@ -1748,6 +1783,14 @@ static const struct hid_device_id mt_devices[] = {
 	{  .driver_data = MT_CLS_WIN_8,
 		HID_DEVICE(HID_BUS_ANY, HID_GROUP_MULTITOUCH_WIN_8,
 			HID_ANY_ID, HID_ANY_ID) },
+    /* SiS device */
+    { .driver_data = MT_CLS_SIS,
+        HID_USB_DEVICE(USB_VENDOR_ID_SIS_TOUCH,
+        USB_DEVICE_ID_SIS817_TOUCH) },
+    { .driver_data = MT_CLS_SIS,
+        HID_USB_DEVICE(USB_VENDOR_ID_SIS_TOUCH,
+        USB_DEVICE_ID_SISF817_TOUCH) },
+
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, mt_devices);
