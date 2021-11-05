@@ -763,7 +763,12 @@
 };
 
 &usbotg {
-	vbus-supply = <&reg_usb_otg_vbus>;
+    /*
+    Disable the regulator to avoid providing power to otg port because
+    this will keep the board on even without power sinking current from the otg
+    port
+    */
+	//vbus-supply = <&reg_usb_otg_vbus>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usbotg>;
 	disable-over-current;
