@@ -518,13 +518,14 @@ static int lm49352_set_bias_level(struct snd_soc_codec *codec,
 {
     int ret;
     struct lm49352_priv * lm49352 = snd_soc_codec_get_drvdata(codec);
+    struct snd_soc_dapm_context * dapm = snd_soc_codec_get_dapm(codec);
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		break;
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
-		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+		if (snd_soc_dapm_get_bias_level(dapm) == SND_SOC_BIAS_OFF) {
 
 			/* Disable the global powerdown; DAPM does the rest */
 			snd_soc_update_bits(codec, BASIC_SETUP_PMC_SETUP, 1, 0);
@@ -547,7 +548,7 @@ static int lm49352_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 
-	codec->dapm.bias_level = level;
+    snd_soc_dapm_init_bias_level(dapm,level);
 	return 0;
 }
 
@@ -699,13 +700,14 @@ static struct snd_soc_codec_driver soc_codec_dev_lm49352 = {
 	.suspend = 	lm49352_suspend,
 	.resume =	lm49352_resume,
 	.set_bias_level = lm49352_set_bias_level,
-	.controls = lm49352_snd_controls,
-	.num_controls = ARRAY_SIZE(lm49352_snd_controls),
-	.dapm_widgets = lm49352_dapm_widgets,
-	.num_dapm_widgets = ARRAY_SIZE(lm49352_dapm_widgets),
-	.dapm_routes = routes,
-	.num_dapm_routes = ARRAY_SIZE(routes),
-
+	.component_driver = {
+        .controls = lm49352_snd_controls,
+        .num_controls = ARRAY_SIZE(lm49352_snd_controls),
+        .dapm_widgets = lm49352_dapm_widgets,
+        .num_dapm_widgets = ARRAY_SIZE(lm49352_dapm_widgets),
+        .dapm_routes = routes,
+        .num_dapm_routes = ARRAY_SIZE(routes),
+	},
 };
 
 static const struct regmap_config lm49352_regmap_config = {
