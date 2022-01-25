@@ -1,0 +1,31 @@
+/dts-v1/;
+
+#include "delta80.dts"
+
+&flash {
+    compatible = "sst,sst26vf064b";
+};
+&usdhc1 { /*Laird Connectivity LWB */
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usdhc1_1>;
+	bus-width = <4>;
+	vmmc-supply = <&wilink_wl_en>;
+	ocr-limit = <0x80>; /* 1.65v - 1.95v */
+	cap-power-off-card;
+	enable-sdio-wakeup;
+    	non-removable;
+	keep-power-in-suspend;
+	status = "okay";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	brcmf: bcrmf@1 {
+        reg = <1>;
+        compatible = "brcm,bcm4329-fmac";
+        laird,regdomain = "ETSI";
+        interrupt-parent = <&gpio1>;
+        interrupts = <14 IRQ_TYPE_LEVEL_HIGH>;
+        ref-clock-frequency = <38400000>;
+	};
+};

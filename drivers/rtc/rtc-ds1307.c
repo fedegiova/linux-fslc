@@ -1614,6 +1614,11 @@ read_rtc:
 			dev_warn(ds1307->dev, "SET TIME!\n");
 			goto read_rtc;
 		}
+		/*Enable 32Khz output signal*/
+		regs[DS1307_REG_CONTROL] = 0xc3;
+		regmap_write(ds1307->regmap, DS1307_REG_CONTROL,
+				     regs[DS1307_REG_CONTROL]
+				     );
 
 		break;
 	default:
