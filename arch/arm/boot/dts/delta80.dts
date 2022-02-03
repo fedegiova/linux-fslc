@@ -7,6 +7,7 @@
 
 #include "imx6q.dtsi"
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
 
 / {
 	model = "Delta80";
@@ -22,6 +23,74 @@
 		mxcfb3 = &mxcfb4;
         mmc0 = &usdhc3; /*force enumeration at index 0*/
         mmc1 = &usdhc1; /*force enumeration at index 0*/
+	};
+
+	gpio_export {
+		compatible = "gpio-export";
+		#size-cells = <0>;
+
+		can_terminator_a {
+			gpio-export,name = "can_terminator_a";
+			gpio-export,output = <0>;
+			gpios = <&gpio5 24 GPIO_ACTIVE_HIGH>;
+		};
+		can_terminator_b {
+			gpio-export,name = "can_terminator_b";
+			gpio-export,output = <0>;
+			gpios = <&gpio5 25 GPIO_ACTIVE_HIGH>;
+		};
+		can_terminator_c {
+			gpio-export,name = "can_terminator_c";
+			gpio-export,output = <0>;
+			gpios = <&gpio5 26 GPIO_ACTIVE_HIGH>;
+		};
+		can_terminator_d {
+			gpio-export,name = "can_terminator_d";
+			gpio-export,output = <0>;
+			gpios = <&gpio5 27 GPIO_ACTIVE_HIGH>;
+		};
+		usb_hub_rst {
+			gpio-export,name = "usb_hub_rst";
+			gpio-export,output = <0>;
+			gpios = <&gpio1 7 GPIO_ACTIVE_LOW>;
+		};
+		//wlan_enable { //TBD
+		//	gpio-export,name = "wlan_enable";
+		//	gpio-export,output = <0>;
+		//	gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+		//};
+		custom_0 {
+			gpio-export,name = "custom_0";
+			gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
+		};
+		custom_1 {
+			gpio-export,name = "custom_1";
+			gpios = <&gpio2 13 GPIO_ACTIVE_LOW>;
+		};
+		custom_2 {
+			gpio-export,name = "custom_2";
+			gpios = <&gpio2 14 GPIO_ACTIVE_LOW>;
+		};
+		custom_3 {
+			gpio-export,name = "custom_3";
+			gpios = <&gpio2 15 GPIO_ACTIVE_LOW>;
+		};
+		custom_4 {
+			gpio-export,name = "custom_4";
+			gpios = <&gpio3 28 GPIO_ACTIVE_LOW>;
+		};
+		custom_5 {
+			gpio-export,name = "custom_5";
+			gpios = <&gpio3 29 GPIO_ACTIVE_LOW>;
+		};
+		custom_6 {
+			gpio-export,name = "custom_6";
+			gpios = <&gpio3 30 GPIO_ACTIVE_LOW>;
+		};
+		custom_7 {
+			gpio-export,name = "custom_7";
+			gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
+		};
 	};
 
 	leds {
@@ -366,10 +435,10 @@
 	imx6qdl-sabresd {
 		pinctrl_hog: hoggrp {
 			fsl,pins = <
-				MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24 0x80000000 /*CAN_A Terminator*/
-				MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25 0x80000000 /*CAN_B Terminator*/
-				MX6QDL_PAD_CSI0_DAT8__GPIO5_IO26 0x80000000 /*CAN_C Terminator*/
-				MX6QDL_PAD_CSI0_DAT9__GPIO5_IO27 0x80000000 /*CAN_D Terminator*/
+				/*MX6QDL_PAD_CSI0_DAT6__GPIO5_IO24 0x80000000*/ /*CAN_A Terminator*/
+				/*MX6QDL_PAD_CSI0_DAT7__GPIO5_IO25 0x80000000*/ /*CAN_B Terminator*/
+				/*MX6QDL_PAD_CSI0_DAT8__GPIO5_IO26 0x80000000*/ /*CAN_C Terminator*/
+				/*MX6QDL_PAD_CSI0_DAT9__GPIO5_IO27 0x80000000*/ /*CAN_D Terminator*/
 				MX6QDL_PAD_GPIO_18__GPIO7_IO13   0x80000000 /*Watchdog Refresh*/
 				MX6QDL_PAD_GPIO_19__GPIO4_IO05   0x80000000 /*PMIC Interrupt*/
 				MX6QDL_PAD_DISP0_DAT19__GPIO5_IO13 0x80000000 /*Touchscreen Pwr*/
@@ -385,21 +454,21 @@
 				MX6QDL_PAD_CSI0_DAT5__GPIO5_IO23 0x80000000 /* Camera RESET */
 				MX6QDL_PAD_SD4_DAT2__GPIO2_IO10	0x80000000 /* System LED */ 
 				MX6QDL_PAD_EIM_D22__GPIO3_IO22 0x80000000 /*USB OTG PWR */
-				MX6QDL_PAD_GPIO_7__GPIO1_IO07  0x80000000 /*USB HUB RESET */
+				/*MX6QDL_PAD_GPIO_7__GPIO1_IO07  0x80000000*/ /*USB HUB RESET */
 				MX6QDL_PAD_SD2_CLK__GPIO1_IO10 0x80000000 /*WLAN ENABLE */
 				MX6QDL_PAD_SD2_DAT1__GPIO1_IO14	0x80000000 /*WLAN Interrupt */ 
 				MX6QDL_PAD_SD2_DAT0__GPIO1_IO15 0x80000000 /*BT ENABLE */
 				MX6QDL_PAD_GPIO_17__GPIO7_IO12  0x80000000 /*ETH1 Rst */
 				MX6QDL_PAD_GPIO_9__GPIO1_IO09    0x80000000 /*ETH1 Interrupt*/
 				MX6QDL_PAD_GPIO_8__GPIO1_IO08    0x80000000 /*ETH2 Rst*/
-				MX6QDL_PAD_SD4_DAT4__GPIO2_IO12	 0x80000000 /*Custom Conf Bit0*/
-				MX6QDL_PAD_SD4_DAT5__GPIO2_IO13	 0x80000000 /*Custom Conf Bit1*/
-				MX6QDL_PAD_SD4_DAT6__GPIO2_IO14	 0x80000000 /*Custom Conf Bit2*/
-				MX6QDL_PAD_SD4_DAT7__GPIO2_IO15	 0x80000000 /*Custom Conf Bit3*/
-				MX6QDL_PAD_EIM_D28__GPIO3_IO28	 0x80000000 /*Custom Conf Bit4*/
-				MX6QDL_PAD_EIM_D29__GPIO3_IO29	 0x80000000 /*Custom Conf Bit5*/
-				MX6QDL_PAD_EIM_D30__GPIO3_IO30	 0x80000000 /*Custom Conf Bit6*/
-				MX6QDL_PAD_EIM_D31__GPIO3_IO31	 0x80000000 /*Custom Conf Bit7*/
+				/*MX6QDL_PAD_SD4_DAT4__GPIO2_IO12	 0x80000000*/ /*Custom Conf Bit0*/
+				/*MX6QDL_PAD_SD4_DAT5__GPIO2_IO13	 0x80000000*/ /*Custom Conf Bit1*/
+				/*MX6QDL_PAD_SD4_DAT6__GPIO2_IO14	 0x80000000*/ /*Custom Conf Bit2*/
+				/*MX6QDL_PAD_SD4_DAT7__GPIO2_IO15	 0x80000000*/ /*Custom Conf Bit3*/
+				/*MX6QDL_PAD_EIM_D28__GPIO3_IO28	 0x80000000*/ /*Custom Conf Bit4*/
+				/*MX6QDL_PAD_EIM_D29__GPIO3_IO29	 0x80000000*/ /*Custom Conf Bit5*/
+				/*MX6QDL_PAD_EIM_D30__GPIO3_IO30	 0x80000000*/ /*Custom Conf Bit6*/
+				/*MX6QDL_PAD_EIM_D31__GPIO3_IO31	 0x80000000*/ /*Custom Conf Bit7*/
 			>;
 		};
 
