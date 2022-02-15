@@ -2,8 +2,14 @@
 
 #include "delta80.dts"
 
+/ {
+	model = "Delta80 m03";
+};
+
 &flash {
-    compatible = "sst,sst26vf064b";
+    /*BEWARE! if nor flash won't get recognized remember to modprobe imx-sdma first*/
+    /*which is built as a module to allow loading the firmware from rootfs*/
+    compatible = "sst,sst26vf064b", "jedec,spi-nor";
 };
 &usdhc1 { /*Laird Connectivity LWB */
 	pinctrl-names = "default";

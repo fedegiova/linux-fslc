@@ -23,6 +23,7 @@
 		mxcfb3 = &mxcfb4;
         mmc0 = &usdhc3; /*force enumeration at index 0*/
         mmc1 = &usdhc1; /*force enumeration at index 0*/
+        nor = &flash;
 	};
 
 	gpio_export {
@@ -253,10 +254,12 @@
 	pinctrl-0 = <&pinctrl_ecspi1>;
 	status = "okay";
 
+    /*BEWARE! if nor flash won't get recognized remember to modprobe imx-sdma first*/
+    /*which is built as a module to allow loading the firmware from rootfs*/
 	flash: m25p80@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
-		compatible = "sst,sst25vf064c";
+		compatible = "sst,sst25vf064c", "jedec,spi-nor";
 		spi-max-frequency = <20000000>;
 		reg = <0>;
 		partition@0 {
