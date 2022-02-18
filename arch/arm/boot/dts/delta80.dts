@@ -55,6 +55,11 @@
 			gpio-export,output = <0>;
 			gpios = <&gpio1 7 GPIO_ACTIVE_LOW>;
 		};
+		touch_pwr {
+			gpio-export,name = "touch_pwr";
+			gpio-export,output = <1>;
+			gpios = <&gpio5 13 GPIO_ACTIVE_HIGH>;
+		};
 		//wlan_enable { //TBD
 		//	gpio-export,name = "wlan_enable";
 		//	gpio-export,output = <0>;
@@ -444,7 +449,7 @@
 				/*MX6QDL_PAD_CSI0_DAT9__GPIO5_IO27 0x80000000*/ /*CAN_D Terminator*/
 				MX6QDL_PAD_GPIO_18__GPIO7_IO13   0x80000000 /*Watchdog Refresh*/
 				MX6QDL_PAD_GPIO_19__GPIO4_IO05   0x80000000 /*PMIC Interrupt*/
-				MX6QDL_PAD_DISP0_DAT19__GPIO5_IO13 0x80000000 /*Touchscreen Pwr*/
+				/*MX6QDL_PAD_DISP0_DAT19__GPIO5_IO13 0x80000000*/ /*Touchscreen Pwr*/
 				MX6QDL_PAD_EIM_D23__GPIO3_IO23 0x80000000 /*CAN_D Interrupt*/
 				MX6QDL_PAD_EIM_D20__GPIO3_IO20 0x80000000 /*CAN_C Interrupt*/
 				MX6QDL_PAD_GPIO_5__GPIO1_IO05 0x80000000  /* PCIE_RST */
