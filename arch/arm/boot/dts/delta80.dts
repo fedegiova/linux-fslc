@@ -400,8 +400,8 @@
 		};
 	};
 
-	mcp7940n@6f {
-		compatible = "fsl,mcp7940n";
+	mcp7940x@6f {
+		compatible = "microchip,mcp7940x","mcp7940x";
 		reg = <0x6f>;
 	};
 
