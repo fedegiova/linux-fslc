@@ -616,9 +616,9 @@ int __gpiod_export(struct gpio_desc *desc, bool direction_may_change, const char
 	if (chip->names && chip->names[offset])
 		ioname = chip->names[offset];
 
-    if (name) 
-    	ioname = name;
-    	
+	if (name)
+		ioname = name;
+
 	dev = device_create_with_groups(&gpio_class, &gdev->dev,
 					MKDEV(0, 0), data, gpio_groups,
 					ioname ? ioname : "gpio%u",

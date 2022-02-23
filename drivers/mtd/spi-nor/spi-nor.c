@@ -884,6 +884,62 @@ static int spi_nor_is_locked(struct mtd_info *mtd, loff_t ofs, uint64_t len)
 	return ret;
 }
 
+#define SST26VF_CR_BPNV		BIT(3)
+
+/**
+ * spi_nor_global_block_unlock() - Unlock Global Block Protection.
+ * @nor:	pointer to 'struct spi_nor'.
+ *
+ * Return: 0 on success, -errno otherwise.
+ */
+int spi_nor_global_block_unlock(struct spi_nor *nor)
+{
+	int ret;
+
+	ret = write_enable(nor);
+	if (ret)
+		return ret;
+
+	ret = nor->write_reg(nor, SPINOR_OP_GBULK,NULL, 0);
+	if (ret) {
+		dev_dbg(nor->dev, "error %d on Global Block Unlock\n", ret);
+		return ret;
+	}
+
+	return spi_nor_wait_till_ready(nor);
+}
+
+static int sst26vf_lock(struct spi_nor *nor, loff_t ofs, uint64_t len)
+{
+	return -EOPNOTSUPP;
+}
+
+static int sst26vf_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
+{
+	int ret;
+
+	/* We only support unlocking the entire flash array. */
+	if (ofs != 0 || len != nor->mtd.size)
+		return -EINVAL;
+
+	ret = read_cr(nor);
+	if (ret < 0)
+		return ret;
+
+	if (!(ret & SST26VF_CR_BPNV)) {
+		dev_dbg(nor->dev, "Any block has been permanently locked\n");
+		return -EINVAL;
+	}
+
+	return spi_nor_global_block_unlock(nor);
+}
+
+static int sst26vf_is_locked(struct spi_nor *nor, loff_t ofs, uint64_t len)
+{
+	return -EOPNOTSUPP;
+}
+
+
 /* Used when the "_ext_id" is two bytes at most */
 #define INFO(_jedec_id, _ext_id, _sector_size, _n_sectors, _flags)	\
 		.id = {							\
@@ -1120,7 +1176,8 @@ static const struct flash_info spi_nor_ids[] = {
 	{ "sst25wf040b", INFO(0x621613, 0, 64 * 1024,  8, SECT_4K) },
 	{ "sst25wf040",  INFO(0xbf2504, 0, 64 * 1024,  8, SECT_4K | SST_WRITE) },
 	{ "sst25wf080",  INFO(0xbf2505, 0, 64 * 1024, 16, SECT_4K | SST_WRITE) },
-	{ "sst26vf064b", INFO(0xbf2643, 0, 64 * 1024, 128, SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
+	{ "sst26vf064b", INFO(0xbf2643, 0, 64 * 1024, 128,
+                        SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ | SPI_NOR_HAS_LOCK)},
 
 	/* ST Microelectronics -- newer production may have feature updates */
 	{ "m25p05",  INFO(0x202010,  0,  32 * 1024,   2, 0) },
@@ -2804,6 +2861,14 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
 		nor->flash_unlock = stm_unlock;
 		nor->flash_is_locked = stm_is_locked;
 	}
+    /*Global Unlock for sst26vf*/
+    if( JEDEC_MFR(info) == SNOR_MFR_SST &&
+            info->flags & SPI_NOR_HAS_LOCK)
+    {
+		nor->flash_lock = sst26vf_lock;
+		nor->flash_unlock = sst26vf_unlock;
+		nor->flash_is_locked = sst26vf_is_locked;
+    }
 
 	if (nor->flash_lock && nor->flash_unlock && nor->flash_is_locked) {
 		mtd->_lock = spi_nor_lock;
