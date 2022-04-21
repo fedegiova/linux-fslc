@@ -21,11 +21,25 @@
 		mxcfb1 = &mxcfb2;
 		mxcfb2 = &mxcfb3;
 		mxcfb3 = &mxcfb4;
-        mmc0 = &usdhc3; /*force enumeration at index 0*/
-        mmc1 = &usdhc1; /*force enumeration at index 0*/
-        nor = &flash;
+		mmc0 = &usdhc3; /*force enumeration at index 0*/
+		mmc1 = &usdhc1; /*force enumeration at index 0*/
+		nor = &flash;
 	};
 
+	memory {
+		reg = <0x10000000 0x80000000>;
+		//linux,usable-memory = <0x10000000 0x3ff7ffff>;
+	};
+	reserved-memory {
+		ramoops@4fdf0000{
+			compatible = "ramoops";
+			record-size = <0x4000>;
+			pmsg-size = <0x4000>;
+			console-size = <0>;
+			ecc-size = <16>;
+			reg = <0x2fdf0000 0x80000>;
+		};
+	};
 	gpio_export {
 		compatible = "gpio-export";
 		#size-cells = <0>;

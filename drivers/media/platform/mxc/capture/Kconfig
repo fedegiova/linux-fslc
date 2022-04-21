@@ -87,7 +87,7 @@ choice
 	depends on VIDEO_MXC_IPU_CAMERA && FB_MXC_SYNC_PANEL
 
 config MXC_IPU_DEVICE_QUEUE_SDC
-	tristate "Queue ipu device for overlay library"
+	bool "Queue ipu device for overlay library"
 	depends on VIDEO_MXC_IPU_CAMERA
 	---help---
 	  Use case CSI->MEM->IPU DEVICE->SDC:
